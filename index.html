@@ -126,7 +126,20 @@
   .js .grid .reveal:nth-child(4) { transition-delay: .1s; }
   .js .grid .reveal:nth-child(5) { transition-delay: .2s; }
   .js .grid .reveal:nth-child(6) { transition-delay: .3s; }
-
+  /* phone app strip */
+  .mstrip { display: none; }
+  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (max-width: 640px) {
+    .mstrip { display: block; margin: 34px -20px 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+    .mtrack { display: flex; width: max-content; animation: slide 26s linear infinite; }
+    .mset { display: flex; gap: 10px; padding-right: 10px; }
+    .mcard { width: 148px; background: rgba(20,22,32,0.8); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 12px; text-align: left; }
+    .mcard .t { font-size: 10px; color: #8a93ad; margin-bottom: 4px; }
+    .mcard .n { font-size: 18px; font-weight: 800; color: #fff; line-height: 1.1; }
+    .mcard .s { font-size: 10px; color: #5ecb7f; margin-top: 4px; }
+    .mnote { font-size: 10px; color: #555c70; margin-top: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .mstrip { overflow-x: auto; } }
   @media (max-width: 1000px) {
     .w2, .w3 { display: none; }
     .win { width: 210px; }
