@@ -59,6 +59,13 @@
     const card = document.getElementById("status-card");
 
     if (session) {
+      // First-time client (came in via magic link, hasn't set a password yet)?
+      // Send them to set one before showing the dashboard.
+      if (!session.user.user_metadata || !session.user.user_metadata.has_password) {
+        window.location.href = "set-password.html";
+        return;
+      }
+
       card.innerHTML = `
         <h1>You're logged in</h1>
         <p>Signed in as ${session.user.email}</p>
