@@ -58,7 +58,7 @@
     color: var(--muted);
     margin-bottom: 6px;
   }
-  input[type="email"] {
+  input[type="email"], input[type="password"] {
     width: 100%;
     padding: 12px 14px;
     background: #1c1c26;
@@ -68,7 +68,7 @@
     font-size: 15px;
     margin-bottom: 16px;
   }
-  input[type="email"]:focus {
+  input:focus {
     outline: none;
     border-color: var(--accent);
   }
@@ -85,6 +85,12 @@
   }
   button:hover { background: var(--accent-hover); }
   button:disabled { opacity: 0.6; cursor: not-allowed; }
+  button.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  button.secondary:hover { background: #1c1c26; }
   .message {
     margin-top: 16px;
     font-size: 14px;
@@ -105,29 +111,111 @@
     color: #ff9d9d;
     border: 1px solid rgba(255, 91, 91, 0.3);
   }
+  .switch-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .switch-link a {
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .switch-link a:hover { text-decoration: underline; }
+  #magic-form { display: none; }
 </style>
 </head>
 <body>
 
 <div class="card">
   <div class="logo">The Flip Ledger LLC</div>
-  <h1>Log in to your project</h1>
-  <p class="sub">Enter the email you used to start your project. We'll send you a one-click login link — no password needed.</p>
 
-  <form id="login-form">
-    <label for="email">Email</label>
-    <input type="email" id="email" placeholder="you@example.com" required>
-    <button type="submit" id="submit-btn">Send me a login link</button>
-  </form>
+  <!-- PASSWORD LOGIN (default view, returning clients) -->
+  <div id="password-view">
+    <h1>Log in to your project</h1>
+    <p class="sub">Enter your email and password.</p>
+
+    <form id="password-form">
+      <label for="pw-email">Email</label>
+      <input type="email" id="pw-email" placeholder="you@example.com" required>
+      <label for="pw-password">Password</label>
+      <input type="password" id="pw-password" placeholder="Your password" required>
+      <button type="submit" id="pw-submit-btn">Log in</button>
+    </form>
+
+    <div class="switch-link">
+      First time here, or forgot your password?
+      <a id="show-magic">Email me a login link</a>
+    </div>
+  </div>
+
+  <!-- MAGIC LINK LOGIN (first-time clients / forgot password) -->
+  <div id="magic-form">
+    <h1>Get a login link</h1>
+    <p class="sub">Enter the email you used to start your project. We'll email you a one-click link — no password needed to get in. Once you're in, you can set a password for next time.</p>
+
+    <form id="login-form">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@example.com" required>
+      <button type="submit" id="submit-btn">Send me a login link</button>
+    </form>
+
+    <div class="switch-link">
+      Already set a password?
+      <a id="show-password">Log in with password</a>
+    </div>
+  </div>
 
   <div id="message" class="message"></div>
 </div>
 
 <script src="supabase-client.js"></script>
 <script>
+  const passwordView = document.getElementById("password-view");
+  const magicForm = document.getElementById("magic-form");
+  const messageEl = document.getElementById("message");
+
+  document.getElementById("show-magic").addEventListener("click", () => {
+    passwordView.style.display = "none";
+    magicForm.style.display = "block";
+    messageEl.className = "message";
+  });
+  document.getElementById("show-password").addEventListener("click", () => {
+    magicForm.style.display = "none";
+    passwordView.style.display = "block";
+    messageEl.className = "message";
+  });
+
+  // --- Password login ---
+  const pwForm = document.getElementById("password-form");
+  const pwSubmitBtn = document.getElementById("pw-submit-btn");
+
+  pwForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("pw-email").value.trim();
+    const password = document.getElementById("pw-password").value;
+
+    pwSubmitBtn.disabled = true;
+    pwSubmitBtn.textContent = "Logging in...";
+    messageEl.className = "message";
+
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+    pwSubmitBtn.disabled = false;
+    pwSubmitBtn.textContent = "Log in";
+
+    if (error) {
+      messageEl.className = "message error";
+      messageEl.textContent = "Couldn't log you in: " + error.message + ". If you haven't set a password yet, use the link below to get one.";
+    } else {
+      window.location.href = "dashboard.html";
+    }
+  });
+
+  // --- Magic link login ---
   const form = document.getElementById("login-form");
   const submitBtn = document.getElementById("submit-btn");
-  const messageEl = document.getElementById("message");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -141,6 +229,8 @@
       email: email,
       options: {
         // After they click the emailed link, Supabase sends them here.
+        // dashboard.html checks whether a password has been set yet and,
+        // if not, sends them to set-password.html first.
         emailRedirectTo: window.location.origin + "/dashboard.html"
       }
     });
