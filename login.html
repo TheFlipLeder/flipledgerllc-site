@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Login — The Flip Ledger LLC</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #14141c;
+    --border: #26262f;
+    --text: #f4f4f6;
+    --muted: #9a9aa6;
+    --accent: #5b8cff;
+    --accent-hover: #4674f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 16px;
+  }
+  .card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+  }
+  .logo {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-size: 22px;
+    margin: 0 0 8px;
+  }
+  p.sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 24px;
+    line-height: 1.5;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  input[type="email"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: #1c1c26;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+  input[type="email"]:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  button {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { background: var(--accent-hover); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .message {
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 12px 14px;
+    border-radius: 10px;
+    display: none;
+  }
+  .message.success {
+    display: block;
+    background: rgba(91, 140, 255, 0.12);
+    color: #9db8ff;
+    border: 1px solid rgba(91, 140, 255, 0.3);
+  }
+  .message.error {
+    display: block;
+    background: rgba(255, 91, 91, 0.12);
+    color: #ff9d9d;
+    border: 1px solid rgba(255, 91, 91, 0.3);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">The Flip Ledger LLC</div>
+  <h1>Log in to your project</h1>
+  <p class="sub">Enter the email you used to start your project. We'll send you a one-click login link — no password needed.</p>
+
+  <form id="login-form">
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="you@example.com" required>
+    <button type="submit" id="submit-btn">Send me a login link</button>
+  </form>
+
+  <div id="message" class="message"></div>
+</div>
+
+<script src="supabase-client.js"></script>
+<script>
+  const form = document.getElementById("login-form");
+  const submitBtn = document.getElementById("submit-btn");
+  const messageEl = document.getElementById("message");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
+    messageEl.className = "message";
+
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email: email,
+      options: {
+        // After they click the emailed link, Supabase sends them here.
+        emailRedirectTo: window.location.origin + "/dashboard.html"
+      }
+    });
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Send me a login link";
+
+    if (error) {
+      messageEl.className = "message error";
+      messageEl.textContent = "Something went wrong: " + error.message;
+    } else {
+      messageEl.className = "message success";
+      messageEl.textContent = "Check your email — we sent you a login link. It's good for one click, then it expires.";
+      form.reset();
+    }
+  });
+</script>
+
+</body>
+</html>
