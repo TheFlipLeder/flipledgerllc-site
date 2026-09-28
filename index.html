@@ -4,27 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Flip Ledger LLC</title>
-<meta name="description" content="Business software built for real businesses. Ready-made apps, plus custom websites and software.">
+<meta name="description" content="Business software built for real businesses. Ready-made apps, plus custom websites and software. You own everything.">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: #fff; line-height: 1.5; }
   a { color: inherit; }
 
-  nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid #222; }
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid #222; position: sticky; top: 0; background: rgba(10,10,10,0.95); z-index: 10; }
   .logo { font-weight: 700; font-size: 18px; letter-spacing: 1px; }
   .nav-links { display: flex; gap: 24px; align-items: center; }
   .nav-links a { text-decoration: none; color: #aaa; font-size: 15px; }
   .nav-links a:hover { color: #fff; }
+  .nav-links a.nav-cta { background: #fff; color: #0a0a0a; padding: 9px 18px; border-radius: 6px; font-weight: 600; }
 
   .hero { text-align: center; padding: 100px 20px 80px; }
   .hero h1 { font-size: 48px; margin-bottom: 20px; line-height: 1.15; }
   .hero p { font-size: 18px; color: #aaa; max-width: 600px; margin: 0 auto 30px; }
-  .btn { display: inline-block; background: #fff; color: #0a0a0a; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+  .btn { display: inline-block; background: #fff; color: #0a0a0a; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: 600; border: none; font-size: 16px; cursor: pointer; }
+  .btn.ghost { background: transparent; color: #fff; border: 1px solid #444; margin-left: 10px; }
 
-  .products { padding: 60px 40px 100px; max-width: 1200px; margin: 0 auto; }
-  .products h2 { font-size: 36px; text-align: center; margin-bottom: 12px; }
-  .products .sub { text-align: center; color: #aaa; max-width: 620px; margin: 0 auto 50px; font-size: 17px; }
+  section.block { padding: 60px 40px 80px; max-width: 1200px; margin: 0 auto; }
+  section.block h2 { font-size: 36px; text-align: center; margin-bottom: 12px; }
+  section.block .sub { text-align: center; color: #aaa; max-width: 640px; margin: 0 auto 50px; font-size: 17px; }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
   .card { background: #141414; border: 1px solid #262626; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; }
@@ -45,16 +47,41 @@
   .card.soon { opacity: 0.75; }
   .card .soon-btn { display: block; text-align: center; background: #262626; color: #888; padding: 12px; border-radius: 8px; font-weight: 600; }
 
+  .price { font-size: 34px; font-weight: 800; margin: 4px 0 2px; }
+  .price small { font-size: 14px; font-weight: 500; color: #999; }
+  .pricecard .time { color: #8ab4ff; font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+
+  .own { background: #0f1a12; border: 1px solid #1f3d28; border-radius: 14px; padding: 30px; margin-top: 30px; text-align: center; }
+  .own h3 { font-size: 24px; margin-bottom: 8px; }
+  .own p { color: #b8d4c0; max-width: 700px; margin: 0 auto; }
+
+  .note { text-align: center; color: #999; font-size: 14px; margin-top: 22px; }
+  .note strong { color: #ddd; }
+
+  .formwrap { max-width: 640px; margin: 0 auto; background: #141414; border: 1px solid #262626; border-radius: 14px; padding: 32px; }
+  .formwrap label { display: block; font-size: 14px; color: #bbb; margin: 16px 0 6px; }
+  .formwrap input, .formwrap select, .formwrap textarea { width: 100%; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 12px; color: #fff; font-size: 16px; font-family: inherit; }
+  .formwrap input:focus, .formwrap select:focus, .formwrap textarea:focus { outline: none; border-color: #8ab4ff; }
+  .formwrap textarea { min-height: 120px; resize: vertical; }
+  .formwrap .btn { width: 100%; margin-top: 24px; }
+  .formwrap .btn:disabled { opacity: 0.6; cursor: wait; }
+  .hp { position: absolute; left: -9999px; height: 0; overflow: hidden; }
+  .msg { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 15px; display: none; }
+  .msg.ok { display: block; background: #12301c; color: #7be09a; }
+  .msg.err { display: block; background: #3a1616; color: #ff9a9a; }
+
   footer { border-top: 1px solid #222; padding: 40px; text-align: center; color: #777; font-size: 14px; }
   footer .flogo { color: #fff; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
 
   @media (max-width: 640px) {
-    nav { padding: 16px 20px; }
-    .nav-links { display: none; }
+    nav { padding: 14px 20px; }
+    .nav-links a:not(.nav-cta) { display: none; }
     .hero { padding: 70px 20px 50px; }
     .hero h1 { font-size: 34px; }
-    .products { padding: 40px 20px 70px; }
-    .products h2 { font-size: 28px; }
+    .btn.ghost { margin: 12px 0 0; }
+    section.block { padding: 40px 20px 60px; }
+    section.block h2 { font-size: 28px; }
+    .formwrap { padding: 22px; }
   }
 </style>
 </head>
@@ -64,6 +91,8 @@
   <div class="logo">THE FLIP LEDGER LLC</div>
   <div class="nav-links">
     <a href="#products">Products</a>
+    <a href="#build">Build For You</a>
+    <a href="#start" class="nav-cta">Start a Project</a>
   </div>
 </nav>
 
@@ -71,9 +100,10 @@
   <h1>Your Business. Your Software.</h1>
   <p>You own it. Not us. No subscriptions, no lock-in — just your website, your code, your domain.</p>
   <a href="#products" class="btn">Explore Our Products</a>
+  <a href="#build" class="btn ghost">Build Something With Us</a>
 </section>
 
-<section class="products" id="products">
+<section class="block" id="products">
   <h2>Our Products</h2>
   <p class="sub">We don't just build software for clients. We build and run our own products too.</p>
 
@@ -158,11 +188,192 @@
   </div>
 </section>
 
+<section class="block" id="build">
+  <h2>Need a Website or App Built for Your Business?</h2>
+  <p class="sub">The products above are what we build for ourselves. We'll build one for you too — and when we're done, it's all yours.</p>
+
+  <div class="grid">
+
+    <div class="card pricecard">
+      <div class="icon">🌐</div>
+      <h3>Business Website</h3>
+      <div class="price"><small>starting at</small> $1,500</div>
+      <div class="time">Typically about a week</div>
+      <p>A professional website for your business that works on every phone and helps turn visitors into customers.</p>
+      <ul>
+        <li>Handful of pages</li>
+        <li>Contact form that emails you</li>
+        <li>Mobile-friendly design</li>
+        <li>Your own domain</li>
+      </ul>
+      <div class="spacer"></div>
+      <a class="visit" href="#start">Start This Project →</a>
+    </div>
+
+    <div class="card pricecard">
+      <div class="icon">🔐</div>
+      <h3>Website + Customer Portal</h3>
+      <div class="price"><small>starting at</small> $3,500</div>
+      <div class="time">Typically about a week</div>
+      <p>Your website plus a login area for your customers — bookings, forms, documents or account pages.</p>
+      <ul>
+        <li>Everything in Business Website</li>
+        <li>Customer login</li>
+        <li>Bookings, forms or documents</li>
+        <li>Secure database</li>
+      </ul>
+      <div class="spacer"></div>
+      <a class="visit" href="#start">Start This Project →</a>
+    </div>
+
+    <div class="card pricecard">
+      <div class="icon">⚙️</div>
+      <h3>Custom Business App</h3>
+      <div class="price"><small>starting at</small> $7,500</div>
+      <div class="time">Scoped after a discovery call</div>
+      <p>Full software built around how your business actually works, like the products above.</p>
+      <ul>
+        <li>Database and user accounts</li>
+        <li>Payments and billing if needed</li>
+        <li>Dashboards and reports</li>
+        <li>Built around your workflow</li>
+      </ul>
+      <div class="spacer"></div>
+      <a class="visit" href="#start">Tell Us Your Idea →</a>
+    </div>
+
+  </div>
+
+  <div class="own">
+    <h3>You own it. All of it.</h3>
+    <p>Your domain, your hosting account and your code all belong to you, in your own accounts. No monthly fee to us and nothing locked to us. After launch, your only ongoing cost is your domain renewal. Full ownership transfers on final payment.</p>
+  </div>
+
+  <p class="note"><strong>Need changes later?</strong> $65/hour (1-hour minimum), or prepay 5 hours for $275. Optional, never required.</p>
+  <p class="note">We take on a small number of projects at a time so every one gets real attention.</p>
+</section>
+
+<section class="block" id="start">
+  <h2>Start a Project</h2>
+  <p class="sub">Tell us what you're trying to build. We'll get back to you and help you figure out the next step.</p>
+
+  <div class="formwrap">
+    <form id="leadForm" novalidate>
+      <label for="name">Your name *</label>
+      <input type="text" id="name" name="name" required autocomplete="name">
+
+      <label for="email">Email *</label>
+      <input type="email" id="email" name="email" required autocomplete="email">
+
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" name="phone" autocomplete="tel">
+
+      <label for="business_type">What kind of business do you have?</label>
+      <input type="text" id="business_type" name="business_type" placeholder="e.g. landscaping, salon, restaurant">
+
+      <label for="request_type">What do you need?</label>
+      <select id="request_type" name="request_type">
+        <option value="">Choose one</option>
+        <option>A website</option>
+        <option>A website with customer login</option>
+        <option>A custom business app</option>
+        <option>One of your existing apps</option>
+        <option>Not sure, I have an idea</option>
+      </select>
+
+      <label for="budget_range">Budget range</label>
+      <select id="budget_range" name="budget_range">
+        <option value="">Choose one</option>
+        <option>$1,500 - $3,500</option>
+        <option>$3,500 - $7,500</option>
+        <option>$7,500 and up</option>
+        <option>Not sure yet</option>
+      </select>
+
+      <label for="message">Tell us about your project</label>
+      <textarea id="message" name="message"></textarea>
+
+      <div class="hp" aria-hidden="true">
+        <label for="website">Leave this empty</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Send My Request</button>
+      <div class="msg" id="formMsg"></div>
+    </form>
+  </div>
+</section>
+
 <footer>
   <div class="flogo">THE FLIP LEDGER LLC</div>
   <div>Build • Launch • Grow</div>
   <div style="margin-top:14px;">© 2026 The Flip Ledger LLC</div>
 </footer>
+
+<script>
+  var FUNCTION_URL = "https://xspaofaiffxrqdebvgih.supabase.co/functions/v1/submit-lead";
+  var ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcGFvZmFpZmZ4cnFkZWJ2Z2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MTA1MTksImV4cCI6MjEwNjA4NjUxOX0.J7K-UlvpJOdnFPuJetc1AVa7cr0XhRErWt22khIpKmA";
+
+  var form = document.getElementById("leadForm");
+  var btn = document.getElementById("submitBtn");
+  var msg = document.getElementById("formMsg");
+
+  function show(type, text) {
+    msg.className = "msg " + type;
+    msg.textContent = text;
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    msg.className = "msg";
+
+    if (document.getElementById("website").value) { return; }
+
+    var data = {
+      name: document.getElementById("name").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      business_type: document.getElementById("business_type").value.trim(),
+      request_type: document.getElementById("request_type").value,
+      budget_range: document.getElementById("budget_range").value,
+      message: document.getElementById("message").value.trim()
+    };
+
+    if (!data.name || !data.email || data.email.indexOf("@") < 1) {
+      show("err", "Please enter your name and a valid email.");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+
+    fetch(FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + ANON_KEY,
+        "apikey": ANON_KEY
+      },
+      body: JSON.stringify(data)
+    })
+    .then(function (res) { return res.json().then(function (j) { return { ok: res.ok, body: j }; }); })
+    .then(function (r) {
+      if (r.ok && r.body.success) {
+        form.reset();
+        show("ok", "Thank you! We got your request and will be in touch soon.");
+      } else {
+        show("err", "Something went wrong. Please try again.");
+      }
+    })
+    .catch(function () {
+      show("err", "Could not send. Please check your connection and try again.");
+    })
+    .finally(function () {
+      btn.disabled = false;
+      btn.textContent = "Send My Request";
+    });
+  });
+</script>
 
 </body>
 </html>
