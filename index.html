@@ -4,21 +4,67 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Flip Ledger LLC</title>
+<meta name="description" content="Business software built for real businesses. Ready-made apps, plus custom websites and software.">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: #fff; }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: #fff; line-height: 1.5; }
+  a { color: inherit; }
+
   nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid #222; }
   .logo { font-weight: 700; font-size: 18px; letter-spacing: 1px; }
-  .hero { text-align: center; padding: 100px 20px; }
-  .hero h1 { font-size: 48px; margin-bottom: 20px; }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
+  .nav-links a { text-decoration: none; color: #aaa; font-size: 15px; }
+  .nav-links a:hover { color: #fff; }
+
+  .hero { text-align: center; padding: 100px 20px 80px; }
+  .hero h1 { font-size: 48px; margin-bottom: 20px; line-height: 1.15; }
   .hero p { font-size: 18px; color: #aaa; max-width: 600px; margin: 0 auto 30px; }
-  .btn { display: inline-block; background: #fff; color: #0a0a0a; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: 600; margin: 0 8px; }
+  .btn { display: inline-block; background: #fff; color: #0a0a0a; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+
+  .products { padding: 60px 40px 100px; max-width: 1200px; margin: 0 auto; }
+  .products h2 { font-size: 36px; text-align: center; margin-bottom: 12px; }
+  .products .sub { text-align: center; color: #aaa; max-width: 620px; margin: 0 auto 50px; font-size: 17px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .card { background: #141414; border: 1px solid #262626; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; }
+  .card:hover { border-color: #444; }
+  .card .icon { font-size: 34px; margin-bottom: 14px; }
+  .card h3 { font-size: 22px; margin-bottom: 4px; }
+  .card .for { color: #8ab4ff; font-size: 14px; margin-bottom: 12px; font-weight: 600; }
+  .card p { color: #b5b5b5; font-size: 15px; margin-bottom: 18px; }
+  .card ul { list-style: none; margin-bottom: 24px; color: #d0d0d0; font-size: 14px; }
+  .card ul li { padding: 3px 0; }
+  .card ul li::before { content: "✓ "; color: #5ecb7f; }
+  .card .spacer { flex: 1; }
+  .card .visit { display: block; text-align: center; background: #fff; color: #0a0a0a; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+  .card .visit:hover { background: #e6e6e6; }
+  .badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 14px; align-self: flex-start; }
+  .badge.live { background: #12301c; color: #5ecb7f; }
+  .badge.soon { background: #33290f; color: #f0b840; }
+  .card.soon { opacity: 0.75; }
+  .card .soon-btn { display: block; text-align: center; background: #262626; color: #888; padding: 12px; border-radius: 8px; font-weight: 600; }
+
+  footer { border-top: 1px solid #222; padding: 40px; text-align: center; color: #777; font-size: 14px; }
+  footer .flogo { color: #fff; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 70px 20px 50px; }
+    .hero h1 { font-size: 34px; }
+    .products { padding: 40px 20px 70px; }
+    .products h2 { font-size: 28px; }
+  }
 </style>
 </head>
 <body>
 
 <nav>
   <div class="logo">THE FLIP LEDGER LLC</div>
+  <div class="nav-links">
+    <a href="#products">Products</a>
+  </div>
 </nav>
 
 <section class="hero">
@@ -26,6 +72,97 @@
   <p>You own it. Not us. No subscriptions, no lock-in — just your website, your code, your domain.</p>
   <a href="#products" class="btn">Explore Our Products</a>
 </section>
+
+<section class="products" id="products">
+  <h2>Our Products</h2>
+  <p class="sub">We don't just build software for clients. We build and run our own products too.</p>
+
+  <div class="grid">
+
+    <div class="card">
+      <span class="badge live">LIVE</span>
+      <div class="icon">🔨</div>
+      <h3>The Flip Ledger</h3>
+      <div class="for">For house flippers</div>
+      <p>Track every dollar of your flips, from purchase to sale.</p>
+      <div class="spacer"></div>
+      <a class="visit" href="https://theflipledger.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledger.com →</a>
+    </div>
+
+    <div class="card">
+      <span class="badge live">LIVE</span>
+      <div class="icon">🏠</div>
+      <h3>The Flip Ledger Rentals</h3>
+      <div class="for">For landlords</div>
+      <p>Manage properties, tenants, rent, maintenance and documents in one place.</p>
+      <div class="spacer"></div>
+      <a class="visit" href="https://theflipledgerrentals.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledgerrentals.com →</a>
+    </div>
+
+    <div class="card">
+      <span class="badge live">LIVE</span>
+      <div class="icon">🏡</div>
+      <h3>The Property Agent Ledger</h3>
+      <div class="for">For real estate agents &amp; brokers</div>
+      <p>Your entire real estate business in one ledger.</p>
+      <div class="spacer"></div>
+      <a class="visit" href="https://thepropertyagentledger.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit thepropertyagentledger.com →</a>
+    </div>
+
+    <div class="card">
+      <span class="badge live">LIVE</span>
+      <div class="icon">🌳</div>
+      <h3>The Flip Ledger Landscaping</h3>
+      <div class="for">For landscapers &amp; snow removal</div>
+      <p>Run your landscaping and snow removal business from one place.</p>
+      <div class="spacer"></div>
+      <a class="visit" href="https://theflipledgerlandscaping.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledgerlandscaping.com →</a>
+    </div>
+
+    <div class="card">
+      <span class="badge live">LIVE</span>
+      <div class="icon">🏗️</div>
+      <h3>The Flip Ledger Roofing</h3>
+      <div class="for">For roofing contractors</div>
+      <p>Software built for roofing companies, from estimates to insurance claims.</p>
+      <div class="spacer"></div>
+      <a class="visit" href="https://theflipledgerroofing.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledgerroofing.com →</a>
+    </div>
+
+    <div class="card">
+      <span class="badge live">LIVE</span>
+      <div class="icon">🌐</div>
+      <h3>Flip Ledger Translator</h3>
+      <div class="for">For anyone who needs English paperwork in their own language</div>
+      <p>Turns any conversation, photo or document into your own language, instantly.</p>
+      <ul>
+        <li>Live two-way conversation</li>
+        <li>Photo and document translation</li>
+        <li>Plain-language "Explain This To Me"</li>
+        <li>60 languages</li>
+      </ul>
+      <div class="spacer"></div>
+      <a class="visit" href="https://theflipledgertranslator.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledgertranslator.com →</a>
+    </div>
+
+    <div class="card soon">
+      <span class="badge soon">COMING SOON</span>
+      <div class="icon">💅</div>
+      <h3>Nail Salon Ledger</h3>
+      <div class="for">For nail salon owners</div>
+      <p>Everything your salon needs to run your business.</p>
+      <div class="spacer"></div>
+      <span class="soon-btn">Coming Soon</span>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="flogo">THE FLIP LEDGER LLC</div>
+  <div>Build • Launch • Grow</div>
+  <div style="margin-top:14px;">© 2026 The Flip Ledger LLC</div>
+</footer>
 
 </body>
 </html>
