@@ -13,6 +13,8 @@
     --text: #f4f4f6;
     --muted: #9a9aa6;
     --accent: #5b8cff;
+    --accent-hover: #4674f0;
+    --green: #4ade80;
   }
   * { box-sizing: border-box; }
   body {
@@ -21,63 +23,452 @@
     background: var(--bg);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    padding: 40px 16px;
+    padding: 24px 16px 60px;
   }
-  .wrap { max-width: 480px; margin: 0 auto; text-align: center; }
-  .logo {
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 24px;
+  .wrap { max-width: 560px; margin: 0 auto; }
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
   }
+  .logo { font-size: 13px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+  .logout { font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: none; }
+  .logout:hover { color: var(--text); }
   .card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 32px 28px;
+    padding: 24px 22px;
+    margin-bottom: 20px;
   }
-  h1 { font-size: 20px; margin: 0 0 8px; }
-  p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 0 0 14px; }
+  p.sub { color: var(--muted); font-size: 14px; margin: 0 0 20px; line-height: 1.5; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; margin-top: 14px; }
+  label:first-child { margin-top: 0; }
+  input[type="text"], input[type="file"], textarea, select {
+    width: 100%;
+    padding: 11px 13px;
+    background: #1c1c26;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+  button {
+    padding: 11px 18px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { background: var(--accent-hover); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  button.full { width: 100%; margin-top: 18px; }
+  button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  button.secondary:hover { background: #1c1c26; }
+
+  /* status stepper */
+  .steps { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .step { flex: 1; text-align: center; position: relative; }
+  .step .dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--border);
+    margin: 0 auto 8px;
+    position: relative; z-index: 1;
+  }
+  .step.done .dot { background: var(--green); }
+  .step.current .dot { background: var(--accent); box-shadow: 0 0 0 4px rgba(91,140,255,0.25); }
+  .step .line {
+    position: absolute; top: 6px; left: -50%; width: 100%; height: 2px;
+    background: var(--border); z-index: 0;
+  }
+  .step:first-child .line { display: none; }
+  .step.done .line, .step.current .line { background: var(--green); }
+  .step .label { font-size: 11px; color: var(--muted); }
+  .step.current .label { color: var(--text); font-weight: 600; }
+
+  .preview-btn {
+    display: block; text-align: center;
+    background: var(--green); color: #0a0a0f;
+    padding: 12px; border-radius: 10px; font-weight: 700;
+    text-decoration: none; margin-top: 18px;
+  }
+
+  /* files */
+  .file-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+  }
+  .file-item:last-child { border-bottom: none; }
+  .file-item a { color: var(--accent); text-decoration: none; }
+
+  /* messages */
+  .messages { max-height: 320px; overflow-y: auto; margin-bottom: 14px; }
+  .msg { margin-bottom: 12px; max-width: 85%; }
+  .msg .bubble { padding: 10px 13px; border-radius: 12px; font-size: 14px; line-height: 1.4; }
+  .msg.client { margin-left: auto; text-align: right; }
+  .msg.client .bubble { background: var(--accent); color: white; display: inline-block; }
+  .msg.admin .bubble { background: #1c1c26; border: 1px solid var(--border); display: inline-block; }
+  .msg .meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .msg-form { display: flex; gap: 8px; }
+  .msg-form textarea { min-height: 44px; }
+
+  /* payment */
+  .pay-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .pay-row:last-child { border-bottom: none; }
+  .pay-row .amt { font-size: 15px; font-weight: 600; }
+  .paid-badge { color: var(--green); font-size: 13px; font-weight: 600; }
+
+  .muted { color: var(--muted); font-size: 13px; }
+  #loading { text-align: center; padding: 60px 0; color: var(--muted); }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">The Flip Ledger LLC</div>
-  <div class="card" id="status-card">
-    <h1>Checking your login…</h1>
-    <p>One moment.</p>
+  <div class="topbar">
+    <div class="logo">The Flip Ledger LLC</div>
+    <a class="logout" id="logout">Log out</a>
   </div>
+
+  <div id="loading">Loading your project…</div>
+  <div id="app" style="display:none;"></div>
 </div>
 
 <script src="supabase-client.js"></script>
 <script>
-  // This is a placeholder confirmation page for now — the real project
-  // dashboard (status, uploads, messages, payment) gets built in the next step.
-  (async () => {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    const card = document.getElementById("status-card");
+let session = null;
+let project = null;
 
-    if (session) {
-      // First-time client (came in via magic link, hasn't set a password yet)?
-      // Send them to set one before showing the dashboard.
-      if (!session.user.user_metadata || !session.user.user_metadata.has_password) {
-        window.location.href = "set-password.html";
-        return;
-      }
+const STATUS_STEPS = [
+  { key: "submitted", label: "Submitted" },
+  { key: "in_review", label: "In Review" },
+  { key: "in_progress", label: "In Progress" },
+  { key: "preview_ready", label: "Preview Ready" },
+  { key: "live", label: "Live" }
+];
 
-      card.innerHTML = `
-        <h1>You're logged in</h1>
-        <p>Signed in as ${session.user.email}</p>
-        <p>Your full project dashboard is coming here next.</p>
-      `;
-    } else {
-      card.innerHTML = `
-        <h1>Not logged in</h1>
-        <p>That link may have expired. <a href="login.html" style="color:#5b8cff;">Request a new login link</a>.</p>
-      `;
+async function init() {
+  const { data } = await supabaseClient.auth.getSession();
+  session = data.session;
+
+  if (!session) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  if (!session.user.user_metadata || !session.user.user_metadata.has_password) {
+    window.location.href = "set-password.html";
+    return;
+  }
+
+  const { data: projects, error } = await supabaseClient
+    .from("projects")
+    .select("*")
+    .eq("client_id", session.user.id)
+    .order("created_at", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    document.getElementById("loading").textContent = "Couldn't load your project: " + error.message;
+    return;
+  }
+
+  project = (projects && projects.length) ? projects[0] : null;
+
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("app").style.display = "block";
+
+  if (project) {
+    renderProject();
+  } else {
+    renderIntakeForm();
+  }
+}
+
+// ---------- INTAKE FORM (no project yet) ----------
+function renderIntakeForm() {
+  document.getElementById("app").innerHTML = `
+    <div class="card">
+      <h1>Tell us about your project</h1>
+      <p class="sub">A few details to get started. You can add more or change anything later.</p>
+      <form id="intake-form">
+        <label for="business_name">Business name</label>
+        <input type="text" id="business_name" placeholder="e.g. Smith Roofing">
+
+        <label for="business_type">What kind of business?</label>
+        <input type="text" id="business_type" placeholder="e.g. Roofing contractor, restaurant, salon...">
+
+        <label for="project_summary">What do you want built?</label>
+        <textarea id="project_summary" placeholder="A website, an app, both? What should it do?" required></textarea>
+
+        <label for="budget">Budget</label>
+        <input type="text" id="budget" placeholder="e.g. $1,500, or 'not sure yet'">
+
+        <label for="style_notes">Style / look preferences</label>
+        <textarea id="style_notes" placeholder="Colors, sites you like, tone (modern, playful, classic...)"></textarea>
+
+        <button type="submit" class="full" id="intake-submit">Submit project</button>
+      </form>
+      <div id="intake-message" class="muted" style="margin-top:12px;"></div>
+    </div>
+  `;
+
+  document.getElementById("intake-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("intake-submit");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+
+    const { data, error } = await supabaseClient.from("projects").insert({
+      client_id: session.user.id,
+      business_name: document.getElementById("business_name").value.trim(),
+      business_type: document.getElementById("business_type").value.trim(),
+      project_summary: document.getElementById("project_summary").value.trim(),
+      budget: document.getElementById("budget").value.trim(),
+      style_notes: document.getElementById("style_notes").value.trim()
+    }).select().single();
+
+    if (error) {
+      document.getElementById("intake-message").textContent = "Something went wrong: " + error.message;
+      btn.disabled = false;
+      btn.textContent = "Submit project";
+      return;
     }
-  })();
+
+    project = data;
+    renderProject();
+  });
+}
+
+// ---------- MAIN PROJECT VIEW ----------
+function renderProject() {
+  const currentIndex = STATUS_STEPS.findIndex(s => s.key === project.status);
+
+  const stepsHtml = STATUS_STEPS.map((s, i) => {
+    let cls = "step";
+    if (i < currentIndex) cls += " done";
+    if (i === currentIndex) cls += " current";
+    return `<div class="${cls}"><div class="line"></div><div class="dot"></div><div class="label">${s.label}</div></div>`;
+  }).join("");
+
+  const previewHtml = project.preview_url
+    ? `<a class="preview-btn" href="${project.preview_url}" target="_blank" rel="noopener">Preview your site →</a>`
+    : "";
+
+  document.getElementById("app").innerHTML = `
+    <div class="card">
+      <h1>${project.business_name || "Your project"}</h1>
+      <p class="sub">${project.project_summary || ""}</p>
+      <div class="steps">${stepsHtml}</div>
+      ${previewHtml}
+    </div>
+
+    <div class="card">
+      <h2>Files</h2>
+      <p class="sub">Upload your logo, photos, or anything else we should use.</p>
+      <input type="file" id="file-input" multiple>
+      <button class="full" id="upload-btn">Upload</button>
+      <div id="file-list" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="card" id="payment-card" style="display:none;">
+      <h2>Payment</h2>
+      <div id="payment-rows"></div>
+    </div>
+
+    <div class="card">
+      <h2>Messages</h2>
+      <div class="messages" id="messages"></div>
+      <div class="msg-form">
+        <textarea id="msg-input" placeholder="Type a message..."></textarea>
+        <button id="msg-send">Send</button>
+      </div>
+    </div>
+  `;
+
+  loadFiles();
+  loadMessages();
+  renderPayment();
+
+  document.getElementById("upload-btn").addEventListener("click", uploadFiles);
+  document.getElementById("msg-send").addEventListener("click", sendMessage);
+}
+
+// ---------- FILES ----------
+async function uploadFiles() {
+  const input = document.getElementById("file-input");
+  const btn = document.getElementById("upload-btn");
+  if (!input.files.length) return;
+
+  btn.disabled = true;
+  btn.textContent = "Uploading...";
+
+  for (const file of input.files) {
+    const path = `${project.id}/${Date.now()}-${file.name}`;
+    const { error: uploadError } = await supabaseClient.storage
+      .from("project-files")
+      .upload(path, file);
+
+    if (uploadError) {
+      alert("Couldn't upload " + file.name + ": " + uploadError.message);
+      continue;
+    }
+
+    await supabaseClient.from("project_files").insert({
+      project_id: project.id,
+      uploaded_by: session.user.id,
+      storage_path: path,
+      file_name: file.name,
+      file_type: file.type
+    });
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Upload";
+  input.value = "";
+  loadFiles();
+}
+
+async function loadFiles() {
+  const { data: files, error } = await supabaseClient
+    .from("project_files")
+    .select("*")
+    .eq("project_id", project.id)
+    .order("created_at", { ascending: false });
+
+  const listEl = document.getElementById("file-list");
+  if (error) {
+    listEl.innerHTML = `<p class="muted">Couldn't load files.</p>`;
+    return;
+  }
+  if (!files.length) {
+    listEl.innerHTML = `<p class="muted">No files uploaded yet.</p>`;
+    return;
+  }
+
+  listEl.innerHTML = "";
+  for (const f of files) {
+    const { data: urlData } = await supabaseClient.storage
+      .from("project-files")
+      .createSignedUrl(f.storage_path, 3600);
+
+    const row = document.createElement("div");
+    row.className = "file-item";
+    row.innerHTML = `<span>${f.file_name}</span>` +
+      (urlData ? `<a href="${urlData.signedUrl}" target="_blank" rel="noopener">View</a>` : "");
+    listEl.appendChild(row);
+  }
+}
+
+// ---------- MESSAGES ----------
+async function loadMessages() {
+  const { data: messages, error } = await supabaseClient
+    .from("project_messages")
+    .select("*")
+    .eq("project_id", project.id)
+    .order("created_at", { ascending: true });
+
+  const el = document.getElementById("messages");
+  if (error) {
+    el.innerHTML = `<p class="muted">Couldn't load messages.</p>`;
+    return;
+  }
+  if (!messages.length) {
+    el.innerHTML = `<p class="muted">No messages yet — send a note below.</p>`;
+  } else {
+    el.innerHTML = messages.map(m => {
+      const who = m.is_admin ? "admin" : "client";
+      const label = m.is_admin ? "The Flip Ledger LLC" : "You";
+      const time = new Date(m.created_at).toLocaleString();
+      return `<div class="msg ${who}">
+        <div class="bubble">${escapeHtml(m.body)}</div>
+        <div class="meta">${label} · ${time}</div>
+      </div>`;
+    }).join("");
+  }
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendMessage() {
+  const input = document.getElementById("msg-input");
+  const body = input.value.trim();
+  if (!body) return;
+
+  const btn = document.getElementById("msg-send");
+  btn.disabled = true;
+
+  const { error } = await supabaseClient.from("project_messages").insert({
+    project_id: project.id,
+    sender_id: session.user.id,
+    is_admin: false,
+    body: body
+  });
+
+  btn.disabled = false;
+  if (error) {
+    alert("Couldn't send that message: " + error.message);
+    return;
+  }
+  input.value = "";
+  loadMessages();
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ---------- PAYMENT ----------
+// Buttons show once you've set a price on the project. Actually charging the
+// card is wired up in a later step (Stripe Checkout via an Edge Function) —
+// for now these just reflect the amounts and paid status you set.
+function renderPayment() {
+  const card = document.getElementById("payment-card");
+  const rows = document.getElementById("payment-rows");
+  const hasDeposit = project.price_deposit != null;
+  const hasBalance = project.price_balance != null;
+
+  if (!hasDeposit && !hasBalance) {
+    card.style.display = "none";
+    return;
+  }
+  card.style.display = "block";
+
+  let html = "";
+  if (hasDeposit) {
+    html += `<div class="pay-row">
+      <span class="amt">Deposit — $${Number(project.price_deposit).toFixed(2)}</span>
+      ${project.deposit_paid
+        ? `<span class="paid-badge">Paid ✓</span>`
+        : `<button disabled title="Payment coming soon">Pay deposit</button>`}
+    </div>`;
+  }
+  if (hasBalance) {
+    html += `<div class="pay-row">
+      <span class="amt">Balance — $${Number(project.price_balance).toFixed(2)}</span>
+      ${project.balance_paid
+        ? `<span class="paid-badge">Paid ✓</span>`
+        : `<button disabled title="Payment coming soon">Pay balance</button>`}
+    </div>`;
+  }
+  rows.innerHTML = html;
+}
+
+document.getElementById("logout").addEventListener("click", async () => {
+  await supabaseClient.auth.signOut();
+  window.location.href = "login.html";
+});
+
+init();
 </script>
 </body>
 </html>
