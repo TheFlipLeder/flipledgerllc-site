@@ -5,63 +5,108 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Flip Ledger LLC</title>
 <meta name="description" content="Business software built for real businesses. Ready-made apps, plus custom websites and software. You own everything.">
+<script>document.documentElement.classList.add("js");</script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: #fff; line-height: 1.5; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #07070b; color: #fff; line-height: 1.5; overflow-x: hidden; }
   a { color: inherit; }
 
-  nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid #222; position: sticky; top: 0; background: rgba(10,10,10,0.95); z-index: 10; }
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 40px; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; background: rgba(7,7,11,0.75); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); z-index: 50; }
   .logo { font-weight: 700; font-size: 18px; letter-spacing: 1px; }
   .nav-links { display: flex; gap: 24px; align-items: center; }
-  .nav-links a { text-decoration: none; color: #aaa; font-size: 15px; }
+  .nav-links a { text-decoration: none; color: #aaa; font-size: 15px; transition: color .2s; }
   .nav-links a:hover { color: #fff; }
   .nav-links a.nav-cta { background: #fff; color: #0a0a0a; padding: 9px 18px; border-radius: 6px; font-weight: 600; }
+  .nav-links a.nav-cta:hover { color: #0a0a0a; box-shadow: 0 0 20px rgba(138,180,255,0.5); }
 
-  .hero { text-align: center; padding: 100px 20px 80px; }
-  .hero h1 { font-size: 48px; margin-bottom: 20px; line-height: 1.15; }
-  .hero p { font-size: 18px; color: #aaa; max-width: 600px; margin: 0 auto 30px; }
-  .btn { display: inline-block; background: #fff; color: #0a0a0a; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: 600; border: none; font-size: 16px; cursor: pointer; }
-  .btn.ghost { background: transparent; color: #fff; border: 1px solid #444; margin-left: 10px; }
+  /* HERO */
+  .hero { position: relative; text-align: center; padding: 150px 20px 130px; min-height: 92vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .glow { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.55; pointer-events: none; animation: drift 16s ease-in-out infinite; }
+  .g1 { width: 520px; height: 520px; background: #3b5bff; top: -140px; left: -120px; }
+  .g2 { width: 460px; height: 460px; background: #8a3bff; bottom: -160px; right: -100px; animation-delay: -6s; }
+  .g3 { width: 340px; height: 340px; background: #00c2ff; top: 30%; left: 55%; opacity: 0.28; animation-delay: -11s; }
+  @keyframes drift { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(40px,-30px) scale(1.08); } 66% { transform: translate(-30px,35px) scale(0.95); } }
 
-  section.block { padding: 60px 40px 80px; max-width: 1200px; margin: 0 auto; }
-  section.block h2 { font-size: 36px; text-align: center; margin-bottom: 12px; }
-  section.block .sub { text-align: center; color: #aaa; max-width: 640px; margin: 0 auto 50px; font-size: 17px; }
+  .grid-bg { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%); pointer-events: none; }
+
+  .floaters { position: absolute; inset: 0; pointer-events: none; will-change: transform; }
+  .win { position: absolute; width: 250px; background: rgba(20,22,32,0.78); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(90,120,255,0.12); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); overflow: hidden; opacity: 0; animation: winIn 1s ease forwards, bob 7s ease-in-out infinite; text-align: left; }
+  .win .bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: #9aa; }
+  .win .bar i { width: 8px; height: 8px; border-radius: 50%; background: #444; display: inline-block; }
+  .win .bar i:nth-child(1) { background: #ff5f57; } .win .bar i:nth-child(2) { background: #febc2e; } .win .bar i:nth-child(3) { background: #28c840; }
+  .win .bar span { margin-left: 6px; }
+  .win .body { padding: 14px; font-size: 12px; color: #cfd3e0; }
+  .win .big { font-size: 24px; font-weight: 800; color: #fff; }
+  .win .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: .6px; color: #7d86a0; margin-bottom: 2px; }
+  .win .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .win .row:last-child { border-bottom: none; }
+  .win .pill { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: #12301c; color: #5ecb7f; }
+  .win .pill.b { background: #14224a; color: #8ab4ff; }
+  .win .pill.y { background: #33290f; color: #f0b840; }
+  .win .bars { display: flex; align-items: flex-end; gap: 5px; height: 42px; margin-top: 10px; }
+  .win .bars span { flex: 1; background: linear-gradient(#5b7bff, #3b5bff44); border-radius: 3px 3px 0 0; }
+  .w1 { top: 12%; left: 4%; animation-delay: .3s, 0s; }
+  .w2 { bottom: 10%; left: 9%; animation-delay: .6s, -2s; }
+  .w3 { top: 15%; right: 4%; animation-delay: .9s, -4s; }
+  .w4 { bottom: 12%; right: 8%; animation-delay: 1.2s, -1s; }
+  @keyframes winIn { to { opacity: 0.85; } }
+  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-16px) rotate(1deg); } }
+  .sample { position: absolute; bottom: 14px; left: 0; right: 0; font-size: 11px; color: #555c70; }
+
+  .hero-inner { position: relative; z-index: 5; max-width: 760px; }
+  .eyebrow { display: inline-block; font-size: 12px; letter-spacing: 3px; color: #8ab4ff; border: 1px solid rgba(138,180,255,0.3); padding: 6px 14px; border-radius: 30px; margin-bottom: 26px; background: rgba(59,91,255,0.1); opacity: 0; animation: up .8s ease .1s forwards; }
+  .hero h1 { font-size: 64px; line-height: 1.08; margin-bottom: 22px; font-weight: 800; letter-spacing: -1.5px; opacity: 0; animation: up .9s ease .3s forwards; }
+  .hero h1 .grad { background: linear-gradient(90deg, #8ab4ff, #b98aff, #5ee0ff); -webkit-background-clip: text; background-clip: text; color: transparent; background-size: 200% auto; animation: shine 6s linear infinite; }
+  @keyframes shine { to { background-position: 200% center; } }
+  .hero p { font-size: 20px; color: #a9aec0; max-width: 620px; margin: 0 auto 36px; opacity: 0; animation: up .9s ease .55s forwards; }
+  .hero .cta { opacity: 0; animation: up .9s ease .8s forwards; }
+  .hero .tags { margin-top: 30px; font-size: 13px; color: #6b7188; letter-spacing: 1px; opacity: 0; animation: up .9s ease 1.05s forwards; }
+  @keyframes up { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
+
+  .btn { display: inline-block; background: #fff; color: #0a0a0a; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; border: none; font-size: 16px; cursor: pointer; transition: transform .2s, box-shadow .2s; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(138,180,255,0.45); }
+  .btn.ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.25); margin-left: 10px; }
+  .btn.ghost:hover { box-shadow: 0 8px 30px rgba(185,138,255,0.3); border-color: rgba(255,255,255,0.5); }
+
+  section.block { padding: 70px 40px 90px; max-width: 1200px; margin: 0 auto; }
+  section.block h2 { font-size: 40px; text-align: center; margin-bottom: 12px; letter-spacing: -0.5px; }
+  section.block .sub { text-align: center; color: #a9aec0; max-width: 640px; margin: 0 auto 54px; font-size: 17px; }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-  .card { background: #141414; border: 1px solid #262626; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; }
-  .card:hover { border-color: #444; }
+  .card { background: rgba(20,22,32,0.7); border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; transition: transform .3s, border-color .3s, box-shadow .3s; }
+  .card:hover { transform: translateY(-6px); border-color: rgba(138,180,255,0.5); box-shadow: 0 16px 50px rgba(59,91,255,0.2); }
   .card .icon { font-size: 34px; margin-bottom: 14px; }
   .card h3 { font-size: 22px; margin-bottom: 4px; }
   .card .for { color: #8ab4ff; font-size: 14px; margin-bottom: 12px; font-weight: 600; }
-  .card p { color: #b5b5b5; font-size: 15px; margin-bottom: 18px; }
-  .card ul { list-style: none; margin-bottom: 24px; color: #d0d0d0; font-size: 14px; }
+  .card p { color: #b5b9c9; font-size: 15px; margin-bottom: 18px; }
+  .card ul { list-style: none; margin-bottom: 24px; color: #d0d4e0; font-size: 14px; }
   .card ul li { padding: 3px 0; }
   .card ul li::before { content: "✓ "; color: #5ecb7f; }
   .card .spacer { flex: 1; }
-  .card .visit { display: block; text-align: center; background: #fff; color: #0a0a0a; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; }
-  .card .visit:hover { background: #e6e6e6; }
+  .card .visit { display: block; text-align: center; background: #fff; color: #0a0a0a; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background .2s; }
+  .card .visit:hover { background: #dfe7ff; }
   .badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 14px; align-self: flex-start; }
   .badge.live { background: #12301c; color: #5ecb7f; }
   .badge.soon { background: #33290f; color: #f0b840; }
   .card.soon { opacity: 0.75; }
-  .card .soon-btn { display: block; text-align: center; background: #262626; color: #888; padding: 12px; border-radius: 8px; font-weight: 600; }
+  .card .soon-btn { display: block; text-align: center; background: #262a38; color: #888; padding: 12px; border-radius: 8px; font-weight: 600; }
 
-  .price { font-size: 34px; font-weight: 800; margin: 4px 0 2px; }
+  .price { font-size: 36px; font-weight: 800; margin: 4px 0 2px; }
   .price small { font-size: 14px; font-weight: 500; color: #999; }
   .pricecard .time { color: #8ab4ff; font-size: 14px; font-weight: 600; margin-bottom: 14px; }
 
-  .own { background: #0f1a12; border: 1px solid #1f3d28; border-radius: 14px; padding: 30px; margin-top: 30px; text-align: center; }
-  .own h3 { font-size: 24px; margin-bottom: 8px; }
+  .own { background: linear-gradient(135deg, rgba(20,60,36,0.6), rgba(15,26,18,0.6)); border: 1px solid #1f3d28; border-radius: 16px; padding: 34px; margin-top: 34px; text-align: center; }
+  .own h3 { font-size: 26px; margin-bottom: 8px; }
   .own p { color: #b8d4c0; max-width: 700px; margin: 0 auto; }
 
   .note { text-align: center; color: #999; font-size: 14px; margin-top: 22px; }
   .note strong { color: #ddd; }
 
-  .formwrap { max-width: 640px; margin: 0 auto; background: #141414; border: 1px solid #262626; border-radius: 14px; padding: 32px; }
+  .formwrap { max-width: 640px; margin: 0 auto; background: rgba(20,22,32,0.7); border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 32px; }
   .formwrap label { display: block; font-size: 14px; color: #bbb; margin: 16px 0 6px; }
-  .formwrap input, .formwrap select, .formwrap textarea { width: 100%; background: #0a0a0a; border: 1px solid #333; border-radius: 8px; padding: 12px; color: #fff; font-size: 16px; font-family: inherit; }
-  .formwrap input:focus, .formwrap select:focus, .formwrap textarea:focus { outline: none; border-color: #8ab4ff; }
+  .formwrap input, .formwrap select, .formwrap textarea { width: 100%; background: #07070b; border: 1px solid #333; border-radius: 8px; padding: 12px; color: #fff; font-size: 16px; font-family: inherit; }
+  .formwrap input:focus, .formwrap select:focus, .formwrap textarea:focus { outline: none; border-color: #8ab4ff; box-shadow: 0 0 0 3px rgba(138,180,255,0.15); }
   .formwrap textarea { min-height: 120px; resize: vertical; }
   .formwrap .btn { width: 100%; margin-top: 24px; }
   .formwrap .btn:disabled { opacity: 0.6; cursor: wait; }
@@ -70,18 +115,40 @@
   .msg.ok { display: block; background: #12301c; color: #7be09a; }
   .msg.err { display: block; background: #3a1616; color: #ff9a9a; }
 
-  footer { border-top: 1px solid #222; padding: 40px; text-align: center; color: #777; font-size: 14px; }
+  footer { border-top: 1px solid rgba(255,255,255,0.08); padding: 40px; text-align: center; color: #777; font-size: 14px; }
   footer .flogo { color: #fff; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
 
+  /* scroll reveal */
+  .js .reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s ease, transform .8s ease; }
+  .js .reveal.in { opacity: 1; transform: translateY(0); }
+  .js .grid .reveal:nth-child(2) { transition-delay: .1s; }
+  .js .grid .reveal:nth-child(3) { transition-delay: .2s; }
+  .js .grid .reveal:nth-child(4) { transition-delay: .1s; }
+  .js .grid .reveal:nth-child(5) { transition-delay: .2s; }
+  .js .grid .reveal:nth-child(6) { transition-delay: .3s; }
+
+  @media (max-width: 1000px) {
+    .w2, .w3 { display: none; }
+    .win { width: 210px; }
+    .hero h1 { font-size: 52px; }
+  }
   @media (max-width: 640px) {
     nav { padding: 14px 20px; }
     .nav-links a:not(.nav-cta) { display: none; }
-    .hero { padding: 70px 20px 50px; }
-    .hero h1 { font-size: 34px; }
+    .hero { padding: 100px 20px 90px; min-height: 86vh; }
+    .hero h1 { font-size: 38px; letter-spacing: -1px; }
+    .hero p { font-size: 17px; }
+    .w1, .w4 { opacity: 0.35 !important; width: 170px; animation: bob 7s ease-in-out infinite; }
+    .w4 { display: none; }
     .btn.ghost { margin: 12px 0 0; }
-    section.block { padding: 40px 20px 60px; }
-    section.block h2 { font-size: 28px; }
+    section.block { padding: 50px 20px 60px; }
+    section.block h2 { font-size: 30px; }
     .formwrap { padding: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .win, .eyebrow, .hero h1, .hero p, .hero .cta, .hero .tags { opacity: 1 !important; }
+    .js .reveal { opacity: 1; transform: none; }
   }
 </style>
 </head>
@@ -97,19 +164,66 @@
 </nav>
 
 <section class="hero">
-  <h1>Your Business. Your Software.</h1>
-  <p>You own it. Not us. No subscriptions, no lock-in — just your website, your code, your domain.</p>
-  <a href="#products" class="btn">Explore Our Products</a>
-  <a href="#build" class="btn ghost">Build Something With Us</a>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="glow g3"></div>
+  <div class="grid-bg"></div>
+
+  <div class="floaters" id="floaters">
+    <div class="win w1">
+      <div class="bar"><i></i><i></i><i></i><span>Rentals · Dashboard</span></div>
+      <div class="body">
+        <div class="lbl">Rent received</div>
+        <div class="big">$4,200</div>
+        <div class="bars"><span style="height:40%"></span><span style="height:65%"></span><span style="height:50%"></span><span style="height:85%"></span><span style="height:70%"></span><span style="height:100%"></span></div>
+      </div>
+    </div>
+    <div class="win w2">
+      <div class="bar"><i></i><i></i><i></i><span>Roofing · Jobs</span></div>
+      <div class="body">
+        <div class="row"><span>Oak Ave re-roof</span><span class="pill b">Scheduled</span></div>
+        <div class="row"><span>Claim #1042</span><span class="pill">Approved</span></div>
+        <div class="row"><span>Estimate · Pine St</span><span class="pill y">Sent</span></div>
+      </div>
+    </div>
+    <div class="win w3">
+      <div class="bar"><i></i><i></i><i></i><span>Landscaping · Today</span></div>
+      <div class="body">
+        <div class="row"><span>Mowing · Route A</span><span>8 stops</span></div>
+        <div class="row"><span>Snow · Zone 2</span><span class="pill">Ready</span></div>
+        <div class="row"><span>Invoices due</span><span>$1,860</span></div>
+      </div>
+    </div>
+    <div class="win w4">
+      <div class="bar"><i></i><i></i><i></i><span>Agent · Pipeline</span></div>
+      <div class="body">
+        <div class="lbl">Active deals</div>
+        <div class="big">12</div>
+        <div class="row"><span>Closing this month</span><span class="pill">3</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-inner">
+    <div class="eyebrow">WE BUILD DIGITAL PRODUCTS</div>
+    <h1>Your Business.<br><span class="grad">Your Software.</span></h1>
+    <p>You own it. Not us. No subscriptions, no lock-in — just your website, your code, your domain.</p>
+    <div class="cta">
+      <a href="#products" class="btn">Explore Our Products</a>
+      <a href="#build" class="btn ghost">Build Something With Us</a>
+    </div>
+    <div class="tags">WEBSITES · WEB APPS · CUSTOM SOFTWARE</div>
+  </div>
+  <div class="sample">Sample data shown for illustration</div>
 </section>
 
 <section class="block" id="products">
-  <h2>Our Products</h2>
-  <p class="sub">We don't just build software for clients. We build and run our own products too.</p>
+  <h2 class="reveal">Our Products</h2>
+  <p class="sub reveal">We don't just build software for clients. We build and run our own products too.</p>
 
   <div class="grid">
 
-    <div class="card">
+    <div class="card reveal">
       <span class="badge live">LIVE</span>
       <div class="icon">🔨</div>
       <h3>The Flip Ledger</h3>
@@ -119,7 +233,7 @@
       <a class="visit" href="https://theflipledger.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledger.com →</a>
     </div>
 
-    <div class="card">
+    <div class="card reveal">
       <span class="badge live">LIVE</span>
       <div class="icon">🏠</div>
       <h3>The Flip Ledger Rentals</h3>
@@ -129,7 +243,7 @@
       <a class="visit" href="https://theflipledgerrentals.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledgerrentals.com →</a>
     </div>
 
-    <div class="card">
+    <div class="card reveal">
       <span class="badge live">LIVE</span>
       <div class="icon">🏡</div>
       <h3>The Property Agent Ledger</h3>
@@ -139,7 +253,7 @@
       <a class="visit" href="https://thepropertyagentledger.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit thepropertyagentledger.com →</a>
     </div>
 
-    <div class="card">
+    <div class="card reveal">
       <span class="badge live">LIVE</span>
       <div class="icon">🌳</div>
       <h3>The Flip Ledger Landscaping</h3>
@@ -149,7 +263,7 @@
       <a class="visit" href="https://theflipledgerlandscaping.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledgerlandscaping.com →</a>
     </div>
 
-    <div class="card">
+    <div class="card reveal">
       <span class="badge live">LIVE</span>
       <div class="icon">🏗️</div>
       <h3>The Flip Ledger Roofing</h3>
@@ -159,7 +273,7 @@
       <a class="visit" href="https://theflipledgerroofing.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledgerroofing.com →</a>
     </div>
 
-    <div class="card">
+    <div class="card reveal">
       <span class="badge live">LIVE</span>
       <div class="icon">🌐</div>
       <h3>Flip Ledger Translator</h3>
@@ -175,7 +289,7 @@
       <a class="visit" href="https://theflipledgertranslator.com/?utm_source=flipledgerllc&utm_medium=site&utm_campaign=products" target="_blank" rel="noopener">Visit theflipledgertranslator.com →</a>
     </div>
 
-    <div class="card soon">
+    <div class="card soon reveal">
       <span class="badge soon">COMING SOON</span>
       <div class="icon">💅</div>
       <h3>Nail Salon Ledger</h3>
@@ -189,12 +303,12 @@
 </section>
 
 <section class="block" id="build">
-  <h2>Need a Website or App Built for Your Business?</h2>
-  <p class="sub">The products above are what we build for ourselves. We'll build one for you too — and when we're done, it's all yours.</p>
+  <h2 class="reveal">Need a Website or App Built for Your Business?</h2>
+  <p class="sub reveal">The products above are what we build for ourselves. We'll build one for you too — and when we're done, it's all yours.</p>
 
   <div class="grid">
 
-    <div class="card pricecard">
+    <div class="card pricecard reveal">
       <div class="icon">🌐</div>
       <h3>Business Website</h3>
       <div class="price"><small>starting at</small> $1,500</div>
@@ -210,7 +324,7 @@
       <a class="visit" href="#start">Start This Project →</a>
     </div>
 
-    <div class="card pricecard">
+    <div class="card pricecard reveal">
       <div class="icon">🔐</div>
       <h3>Website + Customer Portal</h3>
       <div class="price"><small>starting at</small> $3,500</div>
@@ -226,7 +340,7 @@
       <a class="visit" href="#start">Start This Project →</a>
     </div>
 
-    <div class="card pricecard">
+    <div class="card pricecard reveal">
       <div class="icon">⚙️</div>
       <h3>Custom Business App</h3>
       <div class="price"><small>starting at</small> $7,500</div>
@@ -244,20 +358,20 @@
 
   </div>
 
-  <div class="own">
+  <div class="own reveal">
     <h3>You own it. All of it.</h3>
     <p>Your domain, your hosting account and your code all belong to you, in your own accounts. No monthly fee to us and nothing locked to us. After launch, your only ongoing cost is your domain renewal. Full ownership transfers on final payment.</p>
   </div>
 
-  <p class="note"><strong>Need changes later?</strong> $65/hour (1-hour minimum), or prepay 5 hours for $275. Optional, never required.</p>
-  <p class="note">We take on a small number of projects at a time so every one gets real attention.</p>
+  <p class="note reveal"><strong>Need changes later?</strong> $65/hour (1-hour minimum), or prepay 5 hours for $275. Optional, never required.</p>
+  <p class="note reveal">We take on a small number of projects at a time so every one gets real attention.</p>
 </section>
 
 <section class="block" id="start">
-  <h2>Start a Project</h2>
-  <p class="sub">Tell us what you're trying to build. We'll get back to you and help you figure out the next step.</p>
+  <h2 class="reveal">Start a Project</h2>
+  <p class="sub reveal">Tell us what you're trying to build. We'll get back to you and help you figure out the next step.</p>
 
-  <div class="formwrap">
+  <div class="formwrap reveal">
     <form id="leadForm" novalidate>
       <label for="name">Your name *</label>
       <input type="text" id="name" name="name" required autocomplete="name">
@@ -311,6 +425,38 @@
 </footer>
 
 <script>
+  /* scroll reveal */
+  (function () {
+    var els = document.querySelectorAll(".reveal");
+    if (!("IntersectionObserver" in window)) {
+      for (var i = 0; i < els.length; i++) els[i].classList.add("in");
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+
+  /* gentle parallax on the hero windows */
+  (function () {
+    var fl = document.getElementById("floaters");
+    if (!fl || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var ticking = false;
+    window.addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        var y = window.scrollY || 0;
+        if (y < 1200) fl.style.transform = "translateY(" + (y * 0.18) + "px)";
+        ticking = false;
+      });
+    }, { passive: true });
+  })();
+
+  /* lead form */
   var FUNCTION_URL = "https://xspaofaiffxrqdebvgih.supabase.co/functions/v1/submit-lead";
   var ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcGFvZmFpZmZ4cnFkZWJ2Z2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MTA1MTksImV4cCI6MjEwNjA4NjUxOX0.J7K-UlvpJOdnFPuJetc1AVa7cr0XhRErWt22khIpKmA";
 
