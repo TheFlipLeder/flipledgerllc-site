@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — The Flip Ledger LLC</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #14141c;
+    --border: #26262f;
+    --text: #f4f4f6;
+    --muted: #9a9aa6;
+    --accent: #5b8cff;
+    --accent-hover: #4674f0;
+    --green: #4ade80;
+    --yellow: #facc15;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 24px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg); z-index: 10;
+  }
+  .logo { font-size: 13px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+  .logout { font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: none; }
+  .logout:hover { color: var(--text); }
+
+  .layout { display: flex; max-width: 1200px; margin: 0 auto; }
+  .list-pane {
+    width: 320px; flex-shrink: 0; border-right: 1px solid var(--border);
+    height: calc(100vh - 57px); overflow-y: auto; padding: 12px;
+  }
+  .detail-pane { flex: 1; padding: 24px; overflow-y: auto; height: calc(100vh - 57px); }
+
+  .project-row {
+    padding: 12px; border-radius: 10px; cursor: pointer; margin-bottom: 6px;
+    border: 1px solid transparent;
+  }
+  .project-row:hover { background: #1c1c26; }
+  .project-row.active { background: #1c1c26; border-color: var(--accent); }
+  .project-row .name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .project-row .meta { font-size: 12px; color: var(--muted); }
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 20px; margin-top: 6px;
+  }
+  .badge.submitted { background: rgba(154,154,166,0.2); color: var(--muted); }
+  .badge.in_review { background: rgba(250,204,21,0.15); color: var(--yellow); }
+  .badge.in_progress { background: rgba(91,140,255,0.15); color: var(--accent); }
+  .badge.preview_ready { background: rgba(74,222,128,0.15); color: var(--green); }
+  .badge.live { background: var(--green); color: #0a0a0a; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px; margin-bottom: 18px;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 12px; }
+  p.sub { color: var(--muted); font-size: 14px; margin: 0 0 16px; line-height: 1.5; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; margin-top: 12px; }
+  label:first-child { margin-top: 0; }
+  input[type="text"], input[type="number"], input[type="url"], textarea, select {
+    width: 100%; padding: 10px 12px; background: #1c1c26; border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 14px; font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+  button {
+    padding: 10px 16px; background: var(--accent); color: white; border: none;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  button:hover { background: var(--accent-hover); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .row { display: flex; gap: 12px; }
+  .row > div { flex: 1; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .checkbox-row input { width: auto; }
+  .checkbox-row label { margin: 0; }
+
+  .file-item, .msg-list-item {
+    display: flex; justify-content: space-between; padding: 8px 0;
+    border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .file-item:last-child, .msg-list-item:last-child { border-bottom: none; }
+  .file-item a { color: var(--accent); text-decoration: none; }
+
+  .messages { max-height: 260px; overflow-y: auto; margin-bottom: 12px; }
+  .msg { margin-bottom: 10px; max-width: 85%; }
+  .msg .bubble { padding: 9px 12px; border-radius: 10px; font-size: 13px; line-height: 1.4; }
+  .msg.admin { margin-left: auto; text-align: right; }
+  .msg.admin .bubble { background: var(--accent); color: white; display: inline-block; }
+  .msg.client .bubble { background: #1c1c26; border: 1px solid var(--border); display: inline-block; }
+  .msg .meta { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .msg-form { display: flex; gap: 8px; }
+
+  .empty-state { color: var(--muted); font-size: 14px; padding: 40px 0; text-align: center; }
+  .save-note { font-size: 12px; color: var(--green); margin-top: 8px; display: none; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">The Flip Ledger LLC — Admin</div>
+  <a class="logout" id="logout">Log out</a>
+</div>
+
+<div id="unauthorized" style="display:none; padding: 60px 24px; text-align:center; color: var(--muted);">
+  This page is for The Flip Ledger LLC admins only.
+</div>
+
+<div class="layout" id="layout" style="display:none;">
+  <div class="list-pane" id="list-pane">
+    <div class="empty-state">Loading projects…</div>
+  </div>
+  <div class="detail-pane" id="detail-pane">
+    <div class="empty-state">Select a project on the left.</div>
+  </div>
+</div>
+
+<script src="supabase-client.js"></script>
+<script>
+const ADMIN_EMAILS = ["chris4itco@yahoo.com", "theflipledgerllc@gmail.com"];
+let session = null;
+let projects = [];
+let activeProject = null;
+
+async function init() {
+  const { data } = await supabaseClient.auth.getSession();
+  session = data.session;
+
+  if (!session) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  if (!ADMIN_EMAILS.includes(session.user.email)) {
+    document.getElementById("unauthorized").style.display = "block";
+    return;
+  }
+
+  document.getElementById("layout").style.display = "flex";
+  await loadProjects();
+}
+
+async function loadProjects() {
+  const { data, error } = await supabaseClient
+    .from("projects")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  const listPane = document.getElementById("list-pane");
+  if (error) {
+    listPane.innerHTML = `<div class="empty-state">Couldn't load projects: ${error.message}</div>`;
+    return;
+  }
+  projects = data || [];
+  if (!projects.length) {
+    listPane.innerHTML = `<div class="empty-state">No projects yet.</div>`;
+    return;
+  }
+
+  listPane.innerHTML = projects.map(p => `
+    <div class="project-row ${activeProject && activeProject.id === p.id ? 'active' : ''}" data-id="${p.id}">
+      <div class="name">${escapeHtml(p.business_name || "Untitled project")}</div>
+      <div class="meta">${escapeHtml(p.client_email || "")}</div>
+      <span class="badge ${p.status}">${statusLabel(p.status)}</span>
+    </div>
+  `).join("");
+
+  listPane.querySelectorAll(".project-row").forEach(row => {
+    row.addEventListener("click", () => selectProject(row.dataset.id));
+  });
+}
+
+function statusLabel(key) {
+  return {
+    submitted: "Submitted", in_review: "In Review", in_progress: "In Progress",
+    preview_ready: "Preview Ready", live: "Live"
+  }[key] || key;
+}
+
+async function selectProject(id) {
+  activeProject = projects.find(p => p.id === id);
+  document.querySelectorAll(".project-row").forEach(r => {
+    r.classList.toggle("active", r.dataset.id === id);
+  });
+  renderDetail();
+  loadFiles(id);
+  loadMessages(id);
+}
+
+function renderDetail() {
+  const p = activeProject;
+  const pane = document.getElementById("detail-pane");
+
+  pane.innerHTML = `
+    <div class="card">
+      <h1>${escapeHtml(p.business_name || "Untitled project")}</h1>
+      <p class="sub">${escapeHtml(p.client_email || "")} · ${escapeHtml(p.business_type || "")}</p>
+      <p class="sub">${escapeHtml(p.project_summary || "")}</p>
+      ${p.budget ? `<p class="sub"><strong>Budget:</strong> ${escapeHtml(p.budget)}</p>` : ""}
+      ${p.style_notes ? `<p class="sub"><strong>Style notes:</strong> ${escapeHtml(p.style_notes)}</p>` : ""}
+    </div>
+
+    <div class="card">
+      <h2>Status &amp; Preview</h2>
+      <label for="status">Status</label>
+      <select id="status">
+        <option value="submitted">Submitted</option>
+        <option value="in_review">In Review</option>
+        <option value="in_progress">In Progress</option>
+        <option value="preview_ready">Preview Ready</option>
+        <option value="live">Live</option>
+      </select>
+      <label for="preview_url">Preview URL</label>
+      <input type="url" id="preview_url" placeholder="https://your-preview.pages.dev" value="${escapeAttr(p.preview_url || "")}">
+      <button id="save-status" style="margin-top:14px;">Save</button>
+      <div class="save-note" id="status-saved">Saved ✓</div>
+    </div>
+
+    <div class="card">
+      <h2>Pricing</h2>
+      <div class="row">
+        <div>
+          <label for="price_deposit">Deposit ($)</label>
+          <input type="number" id="price_deposit" step="0.01" value="${p.price_deposit ?? ""}">
+          <div class="checkbox-row">
+            <input type="checkbox" id="deposit_paid" ${p.deposit_paid ? "checked" : ""}>
+            <label for="deposit_paid">Deposit paid</label>
+          </div>
+        </div>
+        <div>
+          <label for="price_balance">Balance ($)</label>
+          <input type="number" id="price_balance" step="0.01" value="${p.price_balance ?? ""}">
+          <div class="checkbox-row">
+            <input type="checkbox" id="balance_paid" ${p.balance_paid ? "checked" : ""}>
+            <label for="balance_paid">Balance paid</label>
+          </div>
+        </div>
+      </div>
+      <button id="save-pricing" style="margin-top:14px;">Save</button>
+      <div class="save-note" id="pricing-saved">Saved ✓</div>
+    </div>
+
+    ${p.ai_proposal ? `
+    <div class="card">
+      <h2>AI Proposal</h2>
+      <p class="sub">${escapeHtml(p.ai_proposal.summary || "")}</p>
+      <label>Customer side</label>
+      <ul>${(p.ai_proposal.customer_side || []).map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+      <label>Employee side</label>
+      <ul>${(p.ai_proposal.employee_side || []).map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+      <label>Owner side</label>
+      <ul>${(p.ai_proposal.owner_side || []).map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+    </div>` : ""}
+
+    <div class="card">
+      <h2>Files</h2>
+      <div id="admin-file-list"><div class="empty-state">Loading…</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Messages</h2>
+      <div class="messages" id="admin-messages"><div class="empty-state">Loading…</div></div>
+      <div class="msg-form">
+        <textarea id="admin-msg-input" placeholder="Reply to this client..."></textarea>
+        <button id="admin-msg-send">Send</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("status").value = p.status;
+  document.getElementById("save-status").addEventListener("click", saveStatus);
+  document.getElementById("save-pricing").addEventListener("click", savePricing);
+  document.getElementById("admin-msg-send").addEventListener("click", sendAdminMessage);
+}
+
+async function saveStatus() {
+  const status = document.getElementById("status").value;
+  const preview_url = document.getElementById("preview_url").value.trim() || null;
+  const btn = document.getElementById("save-status");
+  btn.disabled = true;
+
+  const { error } = await supabaseClient
+    .from("projects")
+    .update({ status, preview_url })
+    .eq("id", activeProject.id);
+
+  btn.disabled = false;
+  if (error) { alert("Couldn't save: " + error.message); return; }
+
+  activeProject.status = status;
+  activeProject.preview_url = preview_url;
+  const idx = projects.findIndex(x => x.id === activeProject.id);
+  if (idx > -1) projects[idx] = activeProject;
+  loadProjects();
+  flashSaved("status-saved");
+}
+
+async function savePricing() {
+  const price_deposit = parseFloat(document.getElementById("price_deposit").value) || null;
+  const price_balance = parseFloat(document.getElementById("price_balance").value) || null;
+  const deposit_paid = document.getElementById("deposit_paid").checked;
+  const balance_paid = document.getElementById("balance_paid").checked;
+  const btn = document.getElementById("save-pricing");
+  btn.disabled = true;
+
+  const { error } = await supabaseClient
+    .from("projects")
+    .update({ price_deposit, price_balance, deposit_paid, balance_paid })
+    .eq("id", activeProject.id);
+
+  btn.disabled = false;
+  if (error) { alert("Couldn't save: " + error.message); return; }
+
+  Object.assign(activeProject, { price_deposit, price_balance, deposit_paid, balance_paid });
+  flashSaved("pricing-saved");
+}
+
+function flashSaved(id) {
+  const el = document.getElementById(id);
+  el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 2000);
+}
+
+async function loadFiles(projectId) {
+  const { data: files, error } = await supabaseClient
+    .from("project_files")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false });
+
+  const el = document.getElementById("admin-file-list");
+  if (!el) return;
+  if (error) { el.innerHTML = `<div class="empty-state">Couldn't load files.</div>`; return; }
+  if (!files.length) { el.innerHTML = `<div class="empty-state">No files uploaded.</div>`; return; }
+
+  el.innerHTML = "";
+  for (const f of files) {
+    const { data: urlData } = await supabaseClient.storage
+      .from("project-files")
+      .createSignedUrl(f.storage_path, 3600);
+    const row = document.createElement("div");
+    row.className = "file-item";
+    row.innerHTML = `<span>${escapeHtml(f.file_name)}</span>` +
+      (urlData ? `<a href="${urlData.signedUrl}" target="_blank" rel="noopener">View</a>` : "");
+    el.appendChild(row);
+  }
+}
+
+async function loadMessages(projectId) {
+  const { data: messages, error } = await supabaseClient
+    .from("project_messages")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true });
+
+  const el = document.getElementById("admin-messages");
+  if (!el) return;
+  if (error) { el.innerHTML = `<div class="empty-state">Couldn't load messages.</div>`; return; }
+  if (!messages.length) {
+    el.innerHTML = `<div class="empty-state">No messages yet.</div>`;
+  } else {
+    el.innerHTML = messages.map(m => {
+      const who = m.is_admin ? "admin" : "client";
+      const label = m.is_admin ? "You" : "Client";
+      const time = new Date(m.created_at).toLocaleString();
+      return `<div class="msg ${who}">
+        <div class="bubble">${escapeHtml(m.body)}</div>
+        <div class="meta">${label} · ${time}</div>
+      </div>`;
+    }).join("");
+  }
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendAdminMessage() {
+  const input = document.getElementById("admin-msg-input");
+  const body = input.value.trim();
+  if (!body || !activeProject) return;
+
+  const btn = document.getElementById("admin-msg-send");
+  btn.disabled = true;
+
+  const { error } = await supabaseClient.from("project_messages").insert({
+    project_id: activeProject.id,
+    sender_id: session.user.id,
+    is_admin: true,
+    body: body
+  });
+
+  btn.disabled = false;
+  if (error) { alert("Couldn't send: " + error.message); return; }
+  input.value = "";
+  loadMessages(activeProject.id);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+function escapeAttr(str) {
+  return String(str).replace(/"/g, "&quot;");
+}
+
+document.getElementById("logout").addEventListener("click", async () => {
+  await supabaseClient.auth.signOut();
+  window.location.href = "login.html";
+});
+
+init();
+</script>
+</body>
+</html>
