@@ -227,8 +227,9 @@ function renderIntakeForm() {
     btn.disabled = true;
     btn.textContent = "Submitting...";
 
-    const { data, error } = await supabaseClient.from("projects").insert({
+        const { data, error } = await supabaseClient.from("projects").insert({
       client_id: session.user.id,
+      client_email: session.user.email,
       business_name: document.getElementById("business_name").value.trim(),
       business_type: document.getElementById("business_type").value.trim(),
       project_summary: document.getElementById("project_summary").value.trim(),
