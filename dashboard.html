@@ -245,7 +245,66 @@ function renderIntakeForm() {
 
     project = data;
     renderProject();
+    generateProposal();
   });
+}
+
+// ---------- AI PROPOSAL ----------
+async function generateProposal() {
+  renderProposalSection(); // shows "Analyzing..." state
+
+  const { error } = await supabaseClient.functions.invoke("generate-proposal", {
+    body: { project_id: project.id }
+  });
+
+  // Re-fetch the project so we pick up ai_proposal / ai_proposal_status,
+  // whether this call succeeded or another tab/retry already finished it.
+  const { data: refreshed } = await supabaseClient
+    .from("projects")
+    .select("*")
+    .eq("id", project.id)
+    .single();
+
+  if (refreshed) project = refreshed;
+  if (error && project.ai_proposal_status !== "ready") {
+    project.ai_proposal_status = "failed";
+  }
+  renderProposalSection();
+}
+
+function renderProposalSection() {
+  const el = document.getElementById("proposal-section");
+  if (!el) return;
+
+  const status = project.ai_proposal_status;
+
+  if (status === "ready" && project.ai_proposal) {
+    const p = project.ai_proposal;
+    const list = (items) => `<ul>${(items || []).map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>`;
+    el.innerHTML = `
+      <h2>What we'd build you</h2>
+      <p class="sub">${escapeHtml(p.summary || "")}</p>
+      <label>Customer side</label>
+      ${list(p.customer_side)}
+      <label>Employee side</label>
+      ${list(p.employee_side)}
+      <label>Owner side</label>
+      ${list(p.owner_side)}
+      <p class="muted" style="margin-top:14px;">See something you'd change? Say so in the messages below — we'll refine it before anything gets built.</p>
+    `;
+  } else if (status === "generating" || status === "not_started") {
+    el.innerHTML = `
+      <h2>What we'd build you</h2>
+      <p class="sub">Analyzing your project and sketching out a proposed system — this takes a few seconds…</p>
+    `;
+  } else if (status === "failed") {
+    el.innerHTML = `
+      <h2>What we'd build you</h2>
+      <p class="sub">Couldn't generate a proposal just now.</p>
+      <button id="retry-proposal">Try again</button>
+    `;
+    document.getElementById("retry-proposal")?.addEventListener("click", generateProposal);
+  }
 }
 
 // ---------- MAIN PROJECT VIEW ----------
@@ -270,6 +329,8 @@ function renderProject() {
       <div class="steps">${stepsHtml}</div>
       ${previewHtml}
     </div>
+
+    <div class="card" id="proposal-section"></div>
 
     <div class="card">
       <h2>Files</h2>
@@ -297,6 +358,10 @@ function renderProject() {
   loadFiles();
   loadMessages();
   renderPayment();
+  renderProposalSection();
+  if (project.ai_proposal_status === "not_started") {
+    generateProposal();
+  }
 
   document.getElementById("upload-btn").addEventListener("click", uploadFiles);
   document.getElementById("msg-send").addEventListener("click", sendMessage);
