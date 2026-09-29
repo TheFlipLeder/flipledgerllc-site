@@ -374,6 +374,134 @@
   </div>
   <div class="sample">Sample data shown for illustration</div>
 </section>
+ <!--
+  ============================================================
+  HOMEPAGE AI DEMO SECTION — paste this block into index.html
+  wherever you want it to appear (right after the hero section
+  is a strong spot, before "Products" is also good).
+
+  Before pasting: replace SUPABASE_URL and SUPABASE_ANON_KEY
+  below with the same values you put in supabase-client.js.
+  ============================================================
+-->
+<section id="ai-demo" style="padding: 80px 24px; background: #0a0a0f; border-top: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08);">
+  <div style="max-width: 720px; margin: 0 auto; text-align: center;">
+    <div style="font-size: 13px; letter-spacing: 0.08em; color: #5b8cff; text-transform: uppercase; margin-bottom: 12px; font-weight: 600;">Try it yourself</div>
+    <h2 style="font-size: 32px; font-weight: 800; color: #fff; margin: 0 0 12px;">Tell us how your business works.<br>Watch us design your software.</h2>
+    <p style="color: #aaa; font-size: 16px; line-height: 1.6; margin: 0 0 36px;">No signup needed. Describe your business below and our AI will sketch out a real system for it in seconds.</p>
+
+    <div style="background: #14141c; border: 1px solid #26262f; border-radius: 16px; padding: 28px; text-align: left;">
+      <label style="display: block; font-size: 13px; color: #9a9aa6; margin-bottom: 6px;">What kind of business?</label>
+      <input type="text" id="demo-business-type" placeholder="e.g. Roofing contractor, hair salon, landscaping company"
+        style="width: 100%; padding: 12px 14px; background: #1c1c26; border: 1px solid #26262f; border-radius: 10px; color: #f4f4f6; font-size: 15px; margin-bottom: 16px; box-sizing: border-box;">
+
+      <label style="display: block; font-size: 13px; color: #9a9aa6; margin-bottom: 6px;">How do you currently work?</label>
+      <textarea id="demo-description" placeholder="e.g. Customers call or text me, I write jobs on paper, I invoice by hand at the end of the week..."
+        style="width: 100%; padding: 12px 14px; background: #1c1c26; border: 1px solid #26262f; border-radius: 10px; color: #f4f4f6; font-size: 15px; min-height: 90px; resize: vertical; margin-bottom: 18px; box-sizing: border-box; font-family: inherit;"></textarea>
+
+      <button id="demo-generate-btn" style="width: 100%; padding: 13px 14px; background: #5b8cff; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer;">
+        Design my system
+      </button>
+
+      <div id="demo-error" style="display:none; margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: rgba(255,91,91,0.12); color: #ff9d9d; border: 1px solid rgba(255,91,91,0.3); font-size: 14px;"></div>
+    </div>
+
+    <div id="demo-result" style="display:none; text-align: left; background: #14141c; border: 1px solid #26262f; border-radius: 16px; padding: 28px; margin-top: 20px;">
+      <div style="font-size: 13px; letter-spacing: 0.08em; color: #4ade80; text-transform: uppercase; margin-bottom: 10px; font-weight: 600;">Your proposed system</div>
+      <p id="demo-summary" style="color: #ddd; font-size: 15px; line-height: 1.6; margin: 0 0 18px;"></p>
+
+      <div style="color: #9a9aa6; font-size: 13px; margin-bottom: 6px; font-weight: 600;">Customer side</div>
+      <ul id="demo-customer" style="color: #ddd; font-size: 14px; line-height: 1.7; margin: 0 0 18px;"></ul>
+
+      <div style="color: #9a9aa6; font-size: 13px; margin-bottom: 6px; font-weight: 600;">Employee side</div>
+      <ul id="demo-employee" style="color: #ddd; font-size: 14px; line-height: 1.7; margin: 0 0 18px;"></ul>
+
+      <div style="color: #9a9aa6; font-size: 13px; margin-bottom: 6px; font-weight: 600;">Owner side</div>
+      <ul id="demo-owner" style="color: #ddd; font-size: 14px; line-height: 1.7; margin: 0 0 24px;"></ul>
+
+      <button id="demo-save-btn" style="width: 100%; padding: 13px 14px; background: #4ade80; color: #0a0a0a; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer;">
+        Like it? Create an account to save &amp; build this →
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  const SUPABASE_URL = "https://xspaofaiffxrqdebvgih.supabase.co  ";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcGFvZmFpZmZ4cnFkZWJ2Z2loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MTA1MTksImV4cCI6MjEwNjA4NjUxOX0.J7K-UlvpJOdnFPuJetc1AVa7cr0XhRErWt22khIpKmA";
+
+  const btn = document.getElementById("demo-generate-btn");
+  const errorEl = document.getElementById("demo-error");
+  const resultEl = document.getElementById("demo-result");
+
+  btn.addEventListener("click", async () => {
+    const business_type = document.getElementById("demo-business-type").value.trim();
+    const description = document.getElementById("demo-description").value.trim();
+    errorEl.style.display = "none";
+
+    if (!business_type || !description) {
+      errorEl.textContent = "Fill in both fields so we know what to design.";
+      errorEl.style.display = "block";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Designing your system...";
+
+    try {
+      const res = await fetch(SUPABASE_URL + "/functions/v1/generate-public-proposal", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "authorization": "Bearer " + SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify({ business_type, description })
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      const p = data.proposal;
+      document.getElementById("demo-summary").textContent = p.summary || "";
+      fillList("demo-customer", p.customer_side);
+      fillList("demo-employee", p.employee_side);
+      fillList("demo-owner", p.owner_side);
+      resultEl.style.display = "block";
+      resultEl.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      // Save the demo answers so, if they sign up, the real intake form
+      // on their dashboard can be pre-filled instead of starting blank.
+      localStorage.setItem("flip_demo_business_type", business_type);
+      localStorage.setItem("flip_demo_description", description);
+
+    } catch (err) {
+      errorEl.textContent = "Couldn't generate a proposal: " + err.message;
+      errorEl.style.display = "block";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Design my system";
+    }
+  });
+
+  document.getElementById("demo-save-btn").addEventListener("click", () => {
+    window.location.href = "login.html";
+  });
+
+  function fillList(id, items) {
+    const el = document.getElementById(id);
+    el.innerHTML = (items || []).map(i => `<li>${escapeHtml(i)}</li>`).join("");
+  }
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+})();
+</script>
 
 <section class="block" id="showcase">
   <h2 class="reveal">See What We Build</h2>
