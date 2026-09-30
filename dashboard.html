@@ -212,8 +212,12 @@ function renderIntakeForm() {
         <label for="budget">Budget</label>
         <input type="text" id="budget" placeholder="e.g. $1,500, or 'not sure yet'">
 
-        <label for="style_notes">Style / look preferences</label>
+               <label for="style_notes">Style / look preferences</label>
         <textarea id="style_notes" placeholder="Colors, sites you like, tone (modern, playful, classic...)"></textarea>
+
+        <label for="inspiration_files">Inspiration (optional)</label>
+        <input type="file" id="inspiration_files" multiple>
+        <p class="muted" style="margin-top:6px;">Screenshots, PDFs, logos, or a website you like — anything that helps us understand what you want.</p>
 
         <button type="submit" class="full" id="intake-submit">Submit project</button>
       </form>
