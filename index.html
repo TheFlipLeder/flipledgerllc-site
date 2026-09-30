@@ -825,6 +825,130 @@
 
   show(0);
 })();
+</script><!--
+  ============================================================
+  FLIP LEDGER TRANSLATOR — COMPLETE APP WALKTHROUGH
+  Paste this into index.html right after the Landscaping
+  walkthrough section (or wherever you'd like it).
+
+  BEFORE PASTING — upload the 6 images first, same way as last
+  time: go to the URL
+  github.com/TheFlipLeder/flipledgerllc-site/upload/main/images/translator
+  and drag in all 6 files (01-qr-join.png through 06-assistant.png),
+  keeping the exact same file names. Commit that upload first,
+  separately, before pasting this code in.
+  ============================================================
+-->
+<section style="padding: 80px 24px; background: #0a0a0f; border-top: 1px solid rgba(255,255,255,0.08);">
+  <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+    <div style="font-size: 13px; letter-spacing: 0.08em; color: #5b8cff; text-transform: uppercase; margin-bottom: 12px; font-weight: 600;">Complete app walkthrough</div>
+    <h2 style="font-size: 32px; font-weight: 800; color: #fff; margin: 0 0 12px;">Inside The Flip Ledger Translator.</h2>
+    <p style="color: #aaa; font-size: 16px; line-height: 1.6; margin: 0 0 40px;">No account needed for the other person — just a QR code, live subtitles, and translated documents in one place.</p>
+  </div>
+
+  <div style="max-width: 1000px; margin: 0 auto;">
+
+    <!-- Tabs -->
+    <div id="tw-tabs" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 24px;">
+      <button class="tw-tab" data-i="0" style="padding: 9px 16px; border-radius: 999px; border: 1px solid #26262f; background: #5b8cff; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;">QR Join</button>
+      <button class="tw-tab" data-i="1" style="padding: 9px 16px; border-radius: 999px; border: 1px solid #26262f; background: #14141c; color: #ccc; font-size: 13px; font-weight: 600; cursor: pointer;">Briefing</button>
+      <button class="tw-tab" data-i="2" style="padding: 9px 16px; border-radius: 999px; border: 1px solid #26262f; background: #14141c; color: #ccc; font-size: 13px; font-weight: 600; cursor: pointer;">Translate</button>
+      <button class="tw-tab" data-i="3" style="padding: 9px 16px; border-radius: 999px; border: 1px solid #26262f; background: #14141c; color: #ccc; font-size: 13px; font-weight: 600; cursor: pointer;">Listen</button>
+      <button class="tw-tab" data-i="4" style="padding: 9px 16px; border-radius: 999px; border: 1px solid #26262f; background: #14141c; color: #ccc; font-size: 13px; font-weight: 600; cursor: pointer;">Document</button>
+      <button class="tw-tab" data-i="5" style="padding: 9px 16px; border-radius: 999px; border: 1px solid #26262f; background: #14141c; color: #ccc; font-size: 13px; font-weight: 600; cursor: pointer;">AI Assistant</button>
+    </div>
+
+    <!-- Browser mockup frame -->
+    <div style="background: #14141c; border: 1px solid #26262f; border-radius: 16px; overflow: hidden;">
+      <div style="display: flex; align-items: center; gap: 6px; padding: 12px 16px; background: #1c1c26; border-bottom: 1px solid #26262f;">
+        <span style="width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; display: inline-block;"></span>
+        <span style="width: 11px; height: 11px; border-radius: 50%; background: #febc2e; display: inline-block;"></span>
+        <span style="width: 11px; height: 11px; border-radius: 50%; background: #28c840; display: inline-block;"></span>
+        <span id="tw-caption" style="margin-left: 14px; color: #9a9aa6; font-size: 12.5px;">No account needed for them — scan the code and start talking</span>
+      </div>
+      <div style="position: relative; background: #0a0a0f;">
+        <img id="tw-image" src="images/translator/01-qr-join.png" alt="The Flip Ledger Translator screenshot" style="width: 100%; display: block;">
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 20px;">
+      <button id="tw-prev" style="padding: 9px 16px; border-radius: 10px; border: 1px solid #26262f; background: #14141c; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;">← Prev</button>
+      <button id="tw-autoplay" style="padding: 9px 18px; border-radius: 10px; border: none; background: #5b8cff; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer;">▶ Auto-play</button>
+      <button id="tw-next" style="padding: 9px 16px; border-radius: 10px; border: 1px solid #26262f; background: #14141c; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;">Next →</button>
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function () {
+  const screens = [
+    { file: "images/translator/01-qr-join.png", caption: "No account needed for them — scan the code and start talking" },
+    { file: "images/translator/02-briefing.png", caption: "Briefing — a plain-language daily summary of deadlines and reminders" },
+    { file: "images/translator/03-translate.png", caption: "Translate — type or speak, get a clean translation across 60 languages" },
+    { file: "images/translator/04-listen.png", caption: "Listen — live subtitles for the people around you, in real time" },
+    { file: "images/translator/05-document.png", caption: "Document — upload a letter or form, get it translated and explained" },
+    { file: "images/translator/06-assistant.png", caption: "AI Assistant — ask questions, answered only from your own documents" }
+  ];
+
+  let current = 0;
+  let autoplayTimer = null;
+
+  const imageEl = document.getElementById("tw-image");
+  const captionEl = document.getElementById("tw-caption");
+  const tabs = document.querySelectorAll(".tw-tab");
+  const autoplayBtn = document.getElementById("tw-autoplay");
+
+  function show(i) {
+    current = (i + screens.length) % screens.length;
+    imageEl.src = screens[current].file;
+    captionEl.textContent = screens[current].caption;
+    tabs.forEach((t, idx) => {
+      if (idx === current) {
+        t.style.background = "#5b8cff";
+        t.style.color = "#fff";
+      } else {
+        t.style.background = "#14141c";
+        t.style.color = "#ccc";
+      }
+    });
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      stopAutoplay();
+      show(parseInt(tab.dataset.i, 10));
+    });
+  });
+
+  document.getElementById("tw-prev").addEventListener("click", () => {
+    stopAutoplay();
+    show(current - 1);
+  });
+  document.getElementById("tw-next").addEventListener("click", () => {
+    stopAutoplay();
+    show(current + 1);
+  });
+
+  function startAutoplay() {
+    autoplayTimer = setInterval(() => show(current + 1), 3000);
+    autoplayBtn.textContent = "⏸ Pause";
+  }
+  function stopAutoplay() {
+    if (autoplayTimer) {
+      clearInterval(autoplayTimer);
+      autoplayTimer = null;
+      autoplayBtn.textContent = "▶ Auto-play";
+    }
+  }
+  autoplayBtn.addEventListener("click", () => {
+    if (autoplayTimer) stopAutoplay();
+    else startAutoplay();
+  });
+
+  show(0);
+})();
 </script><section class="block" id="showcase">
   <h2 class="reveal">See What We Build</h2>
   <p class="sub reveal">Tap a product to see it in action. Every name and number in these previews is made-up sample data.</p>
