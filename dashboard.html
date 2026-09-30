@@ -248,11 +248,30 @@ function renderIntakeForm() {
       return;
     }
 
-    project = data;
+      project = data;
+
+    // Upload any inspiration files they attached during intake.
+    const inspirationInput = document.getElementById("inspiration_files");
+    if (inspirationInput && inspirationInput.files.length) {
+      for (const file of inspirationInput.files) {
+        const path = `${project.id}/${Date.now()}-${file.name}`;
+        const { error: uploadError } = await supabaseClient.storage
+          .from("project-files")
+          .upload(path, file);
+        if (!uploadError) {
+          await supabaseClient.from("project_files").insert({
+            project_id: project.id,
+            uploaded_by: session.user.id,
+            storage_path: path,
+            file_name: file.name,
+            file_type: file.type
+          });
+        }
+      }
+    }
+
     renderProject();
     generateProposal();
-  });
-}
 
 // ---------- AI PROPOSAL ----------
 async function generateProposal() {
